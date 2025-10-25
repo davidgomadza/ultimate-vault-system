@@ -1,0 +1,586 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ultimate Digital Vault System</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Courier New', monospace;
+            background: linear-gradient(135deg, #2c2c2c 0%, #1a1a1a 100%);
+            color: #00ff00;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .vault-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .vault-header {
+            text-align: center;
+            margin-bottom: 40px;
+            background: linear-gradient(45deg, rgba(0, 255, 0, 0.1), rgba(0, 255, 255, 0.1));
+            padding: 30px;
+            border-radius: 15px;
+            border: 2px solid #00ff00;
+            box-shadow: 0 0 30px rgba(0, 255, 0, 0.3);
+        }
+
+        .vault-title {
+            font-size: 36px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            text-shadow: 0 0 20px #00ff00;
+            animation: glow 2s infinite alternate;
+        }
+
+        @keyframes glow {
+            from { text-shadow: 0 0 20px #00ff00; }
+            to { text-shadow: 0 0 30px #00ff00, 0 0 40px #00ff00; }
+        }
+
+        .vault-subtitle {
+            font-size: 18px;
+            color: #00ffff;
+        }
+
+        .security-grid {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+
+        .access-panel {
+            background: rgba(0, 0, 0, 0.8);
+            border: 2px solid #00ff00;
+            border-radius: 10px;
+            padding: 25px;
+            box-shadow: inset 0 0 20px rgba(0, 255, 0, 0.1);
+        }
+
+        .vault-display {
+            background: rgba(0, 0, 0, 0.9);
+            border: 2px solid #00ffff;
+            border-radius: 10px;
+            padding: 25px;
+            box-shadow: inset 0 0 20px rgba(0, 255, 255, 0.1);
+        }
+
+        .keypad {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin: 20px 0;
+        }
+
+        .key-button {
+            padding: 15px;
+            background: linear-gradient(45deg, #003300, #006600);
+            border: 2px solid #00ff00;
+            color: #00ff00;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: all 0.2s ease;
+        }
+
+        .key-button:hover {
+            background: linear-gradient(45deg, #006600, #009900);
+            box-shadow: 0 0 15px rgba(0, 255, 0, 0.5);
+            transform: translateY(-2px);
+        }
+
+        .vault-status {
+            background: rgba(255, 0, 0, 0.2);
+            border: 2px solid #ff0000;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+            text-align: center;
+            font-weight: bold;
+            color: #ff0000;
+        }
+
+        .vault-status.unlocked {
+            background: rgba(0, 255, 0, 0.2);
+            border-color: #00ff00;
+            color: #00ff00;
+        }
+
+        .data-containers {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin: 40px 0;
+        }
+
+        .container {
+            background: linear-gradient(135deg, rgba(0, 50, 50, 0.8), rgba(0, 0, 0, 0.9));
+            border: 2px solid #00ffff;
+            border-radius: 10px;
+            padding: 20px;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .container:hover {
+            box-shadow: 0 0 25px rgba(0, 255, 255, 0.5);
+            transform: translateY(-5px);
+        }
+
+        .container-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .container-title {
+            font-size: 18px;
+            font-weight: bold;
+            color: #00ffff;
+        }
+
+        .security-level {
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .level-maximum {
+            background: #ff0000;
+            color: white;
+        }
+
+        .level-high {
+            background: #ff6600;
+            color: white;
+        }
+
+        .level-medium {
+            background: #ffff00;
+            color: black;
+        }
+
+        .container-stats {
+            margin: 15px 0;
+        }
+
+        .stat-row {
+            display: flex;
+            justify-content: space-between;
+            margin: 5px 0;
+            font-size: 14px;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: 4px;
+            margin: 10px 0;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #00ff00, #00ffff);
+            border-radius: 4px;
+            transition: width 0.3s ease;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 0.8; }
+            50% { opacity: 1; }
+            100% { opacity: 0.8; }
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .action-btn {
+            flex: 1;
+            padding: 8px;
+            border: 1px solid;
+            border-radius: 5px;
+            background: transparent;
+            color: inherit;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .btn-access {
+            border-color: #00ff00;
+            color: #00ff00;
+        }
+
+        .btn-access:hover {
+            background: rgba(0, 255, 0, 0.2);
+        }
+
+        .btn-transfer {
+            border-color: #00ffff;
+            color: #00ffff;
+        }
+
+        .btn-transfer:hover {
+            background: rgba(0, 255, 255, 0.2);
+        }
+
+        .btn-secure {
+            border-color: #ff6600;
+            color: #ff6600;
+        }
+
+        .btn-secure:hover {
+            background: rgba(255, 102, 0, 0.2);
+        }
+
+        .system-log {
+            background: rgba(0, 0, 0, 0.95);
+            border: 2px solid #00ff00;
+            border-radius: 10px;
+            padding: 20px;
+            height: 200px;
+            overflow-y: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+        }
+
+        .log-entry {
+            margin: 3px 0;
+            padding: 2px 0;
+        }
+
+        .log-success { color: #00ff00; }
+        .log-warning { color: #ffff00; }
+        .log-error { color: #ff0000; }
+        .log-info { color: #00ffff; }
+
+        .tunnel-effect {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+            background: 
+                radial-gradient(ellipse at center, transparent 0%, rgba(0,0,0,0.3) 70%),
+                repeating-linear-gradient(
+                    0deg,
+                    transparent,
+                    transparent 10px,
+                    rgba(0, 255, 0, 0.03) 10px,
+                    rgba(0, 255, 0, 0.03) 20px
+                );
+        }
+    </style>
+</head>
+<body>
+    <div class="tunnel-effect"></div>
+    
+    <div class="vault-container">
+        <div class="vault-header">
+            <div class="vault-title">🏦 ULTIMATE DIGITAL VAULT SYSTEM</div>
+            <div class="vault-subtitle">Maximum Security • Multi-Layer Encryption • Industrial Grade Protection</div>
+        </div>
+
+        <div class="security-grid">
+            <div class="access-panel">
+                <h3 style="color: #00ff00; margin-bottom: 20px;">🔐 VAULT ACCESS CONTROL</h3>
+                
+                <div class="vault-status" id="vaultStatus">
+                    🔒 VAULT SECURED - ACCESS DENIED
+                </div>
+
+                <div style="margin: 20px 0;">
+                    <label style="display: block; margin-bottom: 10px;">Security Code:</label>
+                    <input type="password" id="accessCode" placeholder="Enter Vault Code" 
+                           style="width: 100%; padding: 12px; background: rgba(0,0,0,0.8); border: 2px solid #00ff00; color: #00ff00; border-radius: 5px;">
+                </div>
+
+                <div class="keypad">
+                    <button class="key-button" onclick="addDigit('1')">1</button>
+                    <button class="key-button" onclick="addDigit('2')">2</button>
+                    <button class="key-button" onclick="addDigit('3')">3</button>
+                    <button class="key-button" onclick="addDigit('4')">4</button>
+                    <button class="key-button" onclick="addDigit('5')">5</button>
+                    <button class="key-button" onclick="addDigit('6')">6</button>
+                    <button class="key-button" onclick="addDigit('7')">7</button>
+                    <button class="key-button" onclick="addDigit('8')">8</button>
+                    <button class="key-button" onclick="addDigit('9')">9</button>
+                    <button class="key-button" onclick="clearCode()" style="background: linear-gradient(45deg, #330000, #660000);">CLR</button>
+                    <button class="key-button" onclick="addDigit('0')">0</button>
+                    <button class="key-button" onclick="attemptAccess()" style="background: linear-gradient(45deg, #003366, #0066cc);">ENTER</button>
+                </div>
+
+                <button onclick="emergencyAccess()" style="width: 100%; padding: 12px; background: linear-gradient(45deg, #660000, #990000); border: 2px solid #ff0000; color: #ff0000; border-radius: 5px; margin-top: 10px; cursor: pointer;">
+                    🚨 EMERGENCY ACCESS
+                </button>
+            </div>
+
+            <div class="vault-display">
+                <h3 style="color: #00ffff; margin-bottom: 20px;">📊 VAULT MONITORING SYSTEM</h3>
+                
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px;">
+                    <div style="text-align: center; padding: 15px; background: rgba(0,255,0,0.1); border: 1px solid #00ff00; border-radius: 5px;">
+                        <div style="font-size: 24px; font-weight: bold;" id="totalContainers">12</div>
+                        <div style="font-size: 12px;">SECURE CONTAINERS</div>
+                    </div>
+                    <div style="text-align: center; padding: 15px; background: rgba(0,255,255,0.1); border: 1px solid #00ffff; border-radius: 5px;">
+                        <div style="font-size: 24px; font-weight: bold;" id="dataVolume">2.4TB</div>
+                        <div style="font-size: 12px;">PROTECTED DATA</div>
+                    </div>
+                    <div style="text-align: center; padding: 15px; background: rgba(255,255,0,0.1); border: 1px solid #ffff00; border-radius: 5px;">
+                        <div style="font-size: 24px; font-weight: bold;" id="securityLevel">MAX</div>
+                        <div style="font-size: 12px;">SECURITY LEVEL</div>
+                    </div>
+                    <div style="text-align: center; padding: 15px; background: rgba(255,102,0,0.1); border: 1px solid #ff6600; border-radius: 5px;">
+                        <div style="font-size: 24px; font-weight: bold;" id="accessAttempts">0</div>
+                        <div style="font-size: 12px;">ACCESS ATTEMPTS</div>
+                    </div>
+                </div>
+
+                <div style="margin: 20px 0;">
+                    <div style="margin-bottom: 10px;">System Integrity: <span style="color: #00ff00; font-weight: bold;">98.7%</span></div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 98.7%;"></div>
+                    </div>
+                </div>
+
+                <div style="margin: 20px 0;">
+                    <div style="margin-bottom: 10px;">Encryption Strength: <span style="color: #00ffff; font-weight: bold;">Military Grade</span></div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 100%;"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="data-containers" id="containers">
+            <!-- Containers will be populated by JavaScript -->
+        </div>
+
+        <div class="system-log" id="systemLog">
+            <div class="log-entry log-info">[SYSTEM] Digital Vault System Online</div>
+            <div class="log-entry log-success">[SECURITY] All security protocols active</div>
+            <div class="log-entry log-info">[VAULT] 12 secure containers initialized</div>
+            <div class="log-entry log-warning">[ACCESS] Awaiting user authentication</div>
+        </div>
+    </div>
+
+    <script>
+        let isVaultUnlocked = false;
+        let accessAttempts = 0;
+        let containers = [
+            {id: 1, name: "Financial Records", security: "maximum", capacity: 85, data: "Banking & Investment Data"},
+            {id: 2, name: "Personal Documents", security: "high", capacity: 67, data: "ID & Legal Documents"},
+            {id: 3, name: "Digital Assets", security: "maximum", capacity: 92, data: "Cryptocurrency Wallets"},
+            {id: 4, name: "Business Files", security: "high", capacity: 74, data: "Corporate Documents"},
+            {id: 5, name: "Medical Records", security: "maximum", capacity: 43, data: "Health Information"},
+            {id: 6, name: "Research Data", security: "medium", capacity: 88, data: "Scientific Research"},
+            {id: 7, name: "Backup Systems", security: "high", capacity: 95, data: "System Backups"},
+            {id: 8, name: "Communication Logs", security: "medium", capacity: 56, data: "Message Archives"},
+            {id: 9, name: "Project Files", security: "high", capacity: 71, data: "Development Projects"},
+            {id: 10, name: "Security Protocols", security: "maximum", capacity: 39, data: "Access Control Data"},
+            {id: 11, name: "Digital Media", security: "medium", capacity: 83, data: "Multimedia Files"},
+            {id: 12, name: "Emergency Vault", security: "maximum", capacity: 15, data: "Critical Backups"}
+        ];
+
+        function addDigit(digit) {
+            const codeInput = document.getElementById('accessCode');
+            if (codeInput.value.length < 12) {
+                codeInput.value += digit;
+            }
+        }
+
+        function clearCode() {
+            document.getElementById('accessCode').value = '';
+        }
+
+        function attemptAccess() {
+            const code = document.getElementById('accessCode').value;
+            const validCodes = ['VAULT2024', '12345', 'SECURE', 'ADMIN'];
+            
+            accessAttempts++;
+            document.getElementById('accessAttempts').textContent = accessAttempts;
+            
+            if (validCodes.includes(code.toUpperCase())) {
+                unlockVault();
+                addLog(`[ACCESS] Vault unlocked with code: ${code}`, 'success');
+            } else {
+                addLog(`[SECURITY] Access denied - Invalid code: ${code}`, 'error');
+                
+                if (accessAttempts >= 3) {
+                    addLog('[SECURITY] Multiple failed attempts - Initiating lockdown', 'error');
+                    setTimeout(() => {
+                        addLog('[SECURITY] Lockdown released - System ready', 'warning');
+                        accessAttempts = 0;
+                        document.getElementById('accessAttempts').textContent = accessAttempts;
+                    }, 5000);
+                }
+            }
+            
+            clearCode();
+        }
+
+        function emergencyAccess() {
+            addLog('[EMERGENCY] Emergency access protocol initiated', 'warning');
+            setTimeout(() => {
+                unlockVault();
+                addLog('[EMERGENCY] Emergency access granted', 'success');
+            }, 2000);
+        }
+
+        function unlockVault() {
+            isVaultUnlocked = true;
+            const status = document.getElementById('vaultStatus');
+            status.className = 'vault-status unlocked';
+            status.textContent = '🔓 VAULT UNLOCKED - ACCESS GRANTED';
+            
+            renderContainers();
+        }
+
+        function renderContainers() {
+            const containerDiv = document.getElementById('containers');
+            containerDiv.innerHTML = '';
+            
+            containers.forEach(container => {
+                const div = document.createElement('div');
+                div.className = 'container';
+                
+                let securityClass = 'level-medium';
+                if (container.security === 'maximum') securityClass = 'level-maximum';
+                if (container.security === 'high') securityClass = 'level-high';
+                
+                div.innerHTML = `
+                    <div class="container-header">
+                        <div class="container-title">${container.name}</div>
+                        <div class="security-level ${securityClass}">${container.security.toUpperCase()}</div>
+                    </div>
+                    <div class="container-stats">
+                        <div class="stat-row">
+                            <span>Data Type:</span>
+                            <span>${container.data}</span>
+                        </div>
+                        <div class="stat-row">
+                            <span>Capacity Used:</span>
+                            <span>${container.capacity}%</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: ${container.capacity}%;"></div>
+                        </div>
+                    </div>
+                    <div class="action-buttons">
+                        <button class="action-btn btn-access" onclick="accessContainer(${container.id})" ${!isVaultUnlocked ? 'disabled' : ''}>
+                            ACCESS
+                        </button>
+                        <button class="action-btn btn-transfer" onclick="transferData(${container.id})" ${!isVaultUnlocked ? 'disabled' : ''}>
+                            TRANSFER
+                        </button>
+                        <button class="action-btn btn-secure" onclick="secureContainer(${container.id})" ${!isVaultUnlocked ? 'disabled' : ''}>
+                            SECURE
+                        </button>
+                    </div>
+                `;
+                
+                containerDiv.appendChild(div);
+            });
+        }
+
+        function accessContainer(id) {
+            const container = containers.find(c => c.id === id);
+            addLog(`[ACCESS] Accessing container: ${container.name}`, 'info');
+            
+            setTimeout(() => {
+                addLog(`[ACCESS] Container ${container.name} accessed successfully`, 'success');
+            }, 1000);
+        }
+
+        function transferData(id) {
+            const container = containers.find(c => c.id === id);
+            addLog(`[TRANSFER] Initiating secure transfer from: ${container.name}`, 'warning');
+            
+            setTimeout(() => {
+                addLog(`[TRANSFER] Data transfer completed for: ${container.name}`, 'success');
+            }, 2000);
+        }
+
+        function secureContainer(id) {
+            const container = containers.find(c => c.id === id);
+            addLog(`[SECURE] Applying additional security to: ${container.name}`, 'info');
+            
+            setTimeout(() => {
+                addLog(`[SECURE] Container ${container.name} secured with enhanced encryption`, 'success');
+            }, 1500);
+        }
+
+        function addLog(message, type) {
+            const logDiv = document.getElementById('systemLog');
+            const timestamp = new Date().toLocaleTimeString();
+            const logEntry = document.createElement('div');
+            logEntry.className = `log-entry log-${type}`;
+            logEntry.textContent = `[${timestamp}] ${message}`;
+            
+            logDiv.insertBefore(logEntry, logDiv.firstChild);
+            
+            // Keep only last 15 entries
+            const entries = logDiv.querySelectorAll('.log-entry');
+            if (entries.length > 15) {
+                logDiv.removeChild(entries[entries.length - 1]);
+            }
+        }
+
+        // Initialize system
+        function initializeVault() {
+            renderContainers();
+            
+            // Simulate system activity
+            setInterval(() => {
+                if (Math.random() < 0.3) {
+                    const activities = [
+                        'System integrity check completed',
+                        'Encryption keys rotated successfully',
+                        'Backup synchronization in progress',
+                        'Security protocols updated',
+                        'Data verification completed'
+                    ];
+                    const activity = activities[Math.floor(Math.random() * activities.length)];
+                    addLog(`[SYSTEM] ${activity}`, 'info');
+                }
+            }, 8000);
+            
+            console.log(`
+    ╔═══════════════════════════════════════════════════════╗
+    ║             🏦 ULTIMATE DIGITAL VAULT SYSTEM          ║
+    ╠═══════════════════════════════════════════════════════╣
+    ║  Access Codes: VAULT2024, 12345, SECURE, ADMIN       ║
+    ║  Features: 12 Secure Containers, Military Encryption ║
+    ║  Emergency Access: Available via Emergency Button     ║
+    ╚═══════════════════════════════════════════════════════╝
+            `);
+        }
+
+        // Start system when page loads
+        window.addEventListener('load', initializeVault);
+    </script>
+</body>
+</html>
